@@ -55,19 +55,7 @@ RUN curl -fsSL https://code-server.dev/install.sh | sh
 
 EXPOSE 8000
 
-ARG USER_UID=1001
-ARG USER_GID=1001
-ARG USER_NAME=alcor
-
-RUN groupadd --gid $USER_GID $USER_NAME \
-    && useradd --uid $USER_UID --gid $USER_GID -m $USER_NAME -s /bin/bash \
-    && apt-get update && apt-get install -y --no-install-recommends \
-        bash \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-COPY src /home/alcor/app
-RUN chown -R $USER_NAME:$USER_NAME /home/alcor/app
-USER ${USER_NAME}
-WORKDIR /home/alcor/app
+COPY src /app
+WORKDIR /app
 
 CMD ["code-server","--bind-addr","0.0.0.0:8000"]

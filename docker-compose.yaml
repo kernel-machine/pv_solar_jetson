@@ -6,7 +6,7 @@ services:
       dockerfile: ./setup/Dockerfile
     privileged: true
     volumes:
-        - "app:/home/alcor/app"
+        - "app:/app"
     environment:
       - PASSWORD=alcor #REPLACE WITH YOUR PASSWORD
     ports:
