@@ -15,4 +15,4 @@ balena push [ip_address]
 ```
 
 ### HOW TO DEVELOP
-Connect to `[IP_ADDRESS]:8000` with a browser to start programming
+Connect to `[IP_ADDRESS]:8000` with a browser to start programming and enter the password inserted in the `docker-compose.yaml` file
