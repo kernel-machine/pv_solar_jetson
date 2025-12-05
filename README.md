@@ -13,3 +13,6 @@ Or when local mode is enabled
 ```bash
 balena push [ip_address]
 ```
+
+### HOW TO DEVELOP
+Connect to `[IP_ADDRESS]:8000` with a browser to start programming

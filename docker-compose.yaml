@@ -1,9 +1,15 @@
 version: '2.1'
 services:
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: ./setup/Dockerfile
     privileged: true
     volumes:
-        - "data:/data"
+        - "app:/home/alcor/app"
+    environment:
+      - PASSWORD=alcor #REPLACE WITH YOUR PASSWORD
+    ports:
+      - 8000:8000
 volumes:
-  data:
+  app:

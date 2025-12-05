@@ -44,11 +44,30 @@ RUN \
     rm -rf Linux_for_Tegra && \
     echo "/usr/lib/aarch64-linux-gnu/tegra" > /etc/ld.so.conf.d/nvidia-tegra.conf && ldconfig
 
-RUN apt update && apt install -y python3 python3-venv python3-pip nvtop
+RUN apt update && apt install -y python3 python3-venv python3-pip nvtop wget
 
 ENV LD_LIBRARY_PATH=/usr/lib/aarch64-linux-gnu/tegra
-COPY postscript.sh /tmp/postscript.sh
+COPY setup/postscript.sh /tmp/postscript.sh
 RUN chmod +x /tmp/postscript.sh
 RUN /tmp/postscript.sh
 
-CMD ["sleep","infinity"]
+RUN curl -fsSL https://code-server.dev/install.sh | sh
+
+EXPOSE 8000
+
+ARG USER_UID=1001
+ARG USER_GID=1001
+ARG USER_NAME=alcor
+
+RUN groupadd --gid $USER_GID $USER_NAME \
+    && useradd --uid $USER_UID --gid $USER_GID -m $USER_NAME -s /bin/bash \
+    && apt-get update && apt-get install -y --no-install-recommends \
+        bash \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+COPY src /home/alcor/app
+RUN chown -R $USER_NAME:$USER_NAME /home/alcor/app
+USER ${USER_NAME}
+WORKDIR /home/alcor/app
+
+CMD ["code-server","--bind-addr","0.0.0.0:8000"]
