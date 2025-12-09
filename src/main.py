@@ -18,14 +18,23 @@ output_params = {
 writer = WriteGear(
     output="rtsp://192.168.0.131:8554/mystream", logging=False, **output_params
 )
+enable_inference = True
+CELL_PHONE_CLASS = 67
+next_index_to_reset_inference = 0
 try:
     index = 0
     while True:
         ret, frame = vc.read()
         if not ret:
             break
-        if (index // 10) % 2 == 0:
+        if enable_inference:
             results = model.predict(frame, verbose=False)
+            cell_phone_detected = \
+                CELL_PHONE_CLASS in results[0].boxes.cls.tolist()
+            if cell_phone_detected:
+                enable_inference = False
+                next_index_to_reset_inference = index + 100
+
             frame = results[0].plot()
         consumtpion_w = ts.get_last_consumption()
         frame = cv2.putText(
@@ -38,6 +47,8 @@ try:
             1,
         )
         writer.write(frame)
+        if index > next_index_to_reset_inference:
+            enable_inference = True
         index += 1
 finally:
     writer.close()
