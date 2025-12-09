@@ -44,7 +44,7 @@ RUN \
     rm -rf Linux_for_Tegra && \
     echo "/usr/lib/aarch64-linux-gnu/tegra" > /etc/ld.so.conf.d/nvidia-tegra.conf && ldconfig
 
-RUN apt update && apt install -y python3 python3-venv python3-pip nvtop wget
+RUN apt update && apt install -y python3 python3-venv python3-pip nvtop wget libgl1
 
 ENV LD_LIBRARY_PATH=/usr/lib/aarch64-linux-gnu/tegra
 
