@@ -21,3 +21,9 @@ balena push [ip_address]
 ### Warning
 The Jetson require special versions of torch and torchvision, so use the one installed at system level.
 Using a torch version installed by pip will not work
+
+### Running RTSP Server
+To run the RTSP you can run this container
+```bash
+podman run --rm -it -e MTX_RTSPTRANSPORTS=tcp -e MTX_WEBRTCADDITIONALHOSTS=192.168.0.131 -p 8554:8554 -p 1935:1935 -p 8888:8888 -p 8889:8889 -p 8890:8890/udp -p 8189:8189/udp docker.io/bluenviron/mediamtx:1-ffmpeg
+```
