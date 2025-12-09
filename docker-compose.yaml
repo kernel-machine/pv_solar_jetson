@@ -9,7 +9,7 @@ services:
     volumes:
         - "app:/app"
     environment:
-      - PASSWORD=alcor #REPLACE WITH YOUR PASSWORD
+      - HASHED_PASSWORD=$argon2i$v=19$m=4096,t=3,p=1$GvPKH1cT27Op4uDJvsYHDw$6gYoRxTJ2YdglVpyJXN9sZ+WVW384EU44z+2z3jvTlo
     ports:
       - 8000:8000
 volumes:
