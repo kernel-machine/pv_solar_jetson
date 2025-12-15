@@ -48,15 +48,15 @@ RUN apt update && apt install -y python3 python3-venv python3-pip nvtop wget lib
 
 ENV LD_LIBRARY_PATH=/usr/lib/aarch64-linux-gnu/tegra
 
+RUN curl -Lo vscode.deb 'https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-arm64'
+RUN apt install -y ./vscode.deb
+
 COPY setup/postscript.sh /tmp/postscript.sh
 RUN chmod +x /tmp/postscript.sh
 RUN /tmp/postscript.sh
 
-RUN curl -fsSL https://code-server.dev/install.sh | sh
-
-EXPOSE 8000
-
 WORKDIR /app
 COPY . /app
 
-CMD ["code-server","--bind-addr","0.0.0.0:8000"]
+#CMD ["code", "--user-data-dir", "/code_config", "tunnel"]
+#CMD ["code", "--user-data-dir", "/code_config", "serve-web","--host","0.0.0.0","--without-connection-token"]

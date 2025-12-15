@@ -8,9 +8,8 @@ services:
     shm_size: '512m'
     volumes:
         - "app:/app"
-    environment:
-      - HASHED_PASSWORD=$argon2i$v=19$m=4096,t=3,p=1$GvPKH1cT27Op4uDJvsYHDw$6gYoRxTJ2YdglVpyJXN9sZ+WVW384EU44z+2z3jvTlo
-    ports:
-      - 8000:8000
+        - "code_config:/code_config"
+    #network_mode: "host"
 volumes:
   app:
+  code_config:
