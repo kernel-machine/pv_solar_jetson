@@ -8,9 +8,5 @@ services:
     shm_size: '512m'
     volumes:
         - "app:/app"
-    environment:
-      - PASSWORD=alcor #REPLACE WITH YOUR PASSWORD
-    ports:
-      - 8000:8000
 volumes:
   app:

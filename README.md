@@ -15,8 +15,16 @@ balena push [ip_address]
 ```
 
 ### HOW TO DEVELOP
-- Connect to `[IP_ADDRESS]:8000` with a browser to start programming and enter the password inserted in the `docker-compose.yaml` file
-- Put all your data in `\app`, otherwise they will be deleted on reboot
+This container is pre-configurated to use VSCode as IDE
+
+At the end of your balena push you have to find a code to authenticate with github in the container vscode installation. You have to find a text like this:
+
+```
+[Logs]    [2025-12-15T12:03:02.053Z] [app] [2025-12-15 12:03:02] info Using GitHub for authentication, run `code tunnel user login --provider <provider>` option to change this.
+[Logs]    [2025-12-15T12:03:02.271Z] [app] To grant access to the server, please log into https://github.com/login/device and use code XXXX-XXXX
+```
+
+Then, go to the https://github.com/login/device and enter the provided code.
 
 ### Warning
 The Jetson require special versions of torch and torchvision, so use the one installed at system level.
