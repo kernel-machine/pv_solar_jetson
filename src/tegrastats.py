@@ -8,10 +8,18 @@ class Tegrastats:
         self.process = \
             Popen(command, stdout=PIPE, text=True, bufsize=1)
         self._lock = Lock()
-        self.latest_line = None
+        self.latest_line: float = None
+        self.consumed_energy_j: float = 0
+        self.interval_s: float = interval_ms/1000
 
         self.reader_thread = Thread(target=self._read_lines)
         self.reader_thread.start()
+
+    def start_measurement(self) -> None:
+        self.consumed_energy_j = 0
+
+    def end_measurement_j(self) -> float:
+        return self.consumed_energy_j
 
     def _read_lines(self) -> None:
         while self.process.poll() is None:
@@ -24,12 +32,12 @@ class Tegrastats:
             if parts[i] == "VDD_IN":
                 instants, average = parts[i+1].split("/")
                 only_digits = int(''.join(filter(str.isdigit, instants)))
-                value = only_digits/1000 if "mw" in instants.lower() \
-                    else only_digits
+                value = float(only_digits/1000 if "mw" in instants.lower() else only_digits)
+                self.consumed_energy_j += value * self.interval_s
                 with self._lock:
                     self.latest_line = value
 
-    def get_last_consumption(self) -> float:
+    def get_last_consumption_w(self) -> float:
         with self._lock:
             return self.latest_line
 

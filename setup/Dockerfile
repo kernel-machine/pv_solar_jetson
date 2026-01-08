@@ -1,4 +1,4 @@
-FROM nvcr.io/nvidia/pytorch:25.11-py3-igpu
+FROM nvcr.io/nvidia/pytorch:25.12-py3-igpu
 
 RUN apt update && apt install -y --no-install-recommends \
   sudo \

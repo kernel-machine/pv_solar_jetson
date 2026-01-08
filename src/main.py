@@ -1,56 +1,28 @@
-import cv2
-from ultralytics import YOLO
-from vidgear.gears import WriteGear
-from tegrastats import Tegrastats
+from rl.env import Environment
+from rl.solar import Solar
+from stable_baselines3.common.env_util import make_vec_env
+from stable_baselines3.common.vec_env import SubprocVecEnv
+from stable_baselines3 import PPO
 
-vc = cv2.VideoCapture(0)
-input_fps = 15
-model = YOLO("yolo11m")
-ts = Tegrastats(100)
+def main():
+    panel_area_m2 = 1*0.55*0.51 #m2
+    efficiency = 0.1426
+    max_power_w = 40 #W
 
-output_params = {
-    "-f": "rtsp",
-    "-rtsp_transport": "tcp",
-    "-input_framerate": input_fps,
-    "-r": input_fps,
-    "-bf": "0",
-}
-writer = WriteGear(
-    output="rtsp://192.168.0.131:8554/mystream", logging=False, **output_params
-)
-enable_inference = True
-CELL_PHONE_CLASS = 67
-next_index_to_reset_inference = 0
-try:
-    index = 0
-    while True:
-        ret, frame = vc.read()
-        if not ret:
-            break
-        if enable_inference:
-            results = model.predict(frame, verbose=False)
-            cell_phone_detected = \
-                CELL_PHONE_CLASS in results[0].boxes.cls.tolist()
-            if cell_phone_detected:
-                enable_inference = False
-                next_index_to_reset_inference = index + 100
+    solar = Solar("solcast2025_full.csv", max_power_w=max_power_w, scale_factor=panel_area_m2*efficiency)
 
-            frame = results[0].plot()
-        consumtpion_w = ts.get_last_consumption()
-        frame = cv2.putText(
-            frame,
-            str(consumtpion_w) + "W",
-            (5, 50),
-            cv2.FONT_HERSHEY_SIMPLEX,
-            1,
-            (255, 0, 0),
-            1,
-        )
-        writer.write(frame)
-        if index > next_index_to_reset_inference:
-            enable_inference = True
-        index += 1
-finally:
-    writer.close()
-    vc.release()
-    ts.stop()
+    def make_env_factory(env_id: int):
+        def env_create():
+            return Environment(acquisition_speed_fps=10,
+                step_size_s=5, 
+                solar=solar,
+                fake_camera=True)
+        return env_create
+    env_fns = [make_env_factory(i) for i in range(4)]
+    vec_env = SubprocVecEnv(env_fns)
+
+    model = PPO("MlpPolicy", vec_env, verbose=1)
+    model.learn(total_timesteps=25000, progress_bar=True)
+
+if __name__ == "__main__":
+    main()
